@@ -1,8 +1,10 @@
 #!/bin/bash
+
 libs=(git perl sed iconv tr)
 for lib in "${libs[@]}"
 do
   if [ "$(which $lib)" == "" ]; then
+    echo ""
     echo "Could not find $lib"
     echo "You can try: brew install $lib"
     exit 1
@@ -28,7 +30,9 @@ DIRTY=$(git status --porcelain)
 
 if [[ $REST != *"--no-git"* ]]; then
   if [[ $DIRTY != "" ]]; then
+    echo ""
     echo "Git status is dirty. Please stash or commit your changes before proceeding."
+    echo ""
   fi
 
   branch_name=$(git symbolic-ref -q HEAD)
@@ -39,11 +43,12 @@ if [[ $REST != *"--no-git"* ]]; then
 fi
 
 echo ""
-echo "Renaming the application"
+echo "> Renaming the application"
 echo ""
-echo "ID: $ID"
-echo "NAME: $NAME"
-echo "SLUG: $SLUG"
+echo "  Id: $ID"
+echo "  Name: $NAME"
+echo "  Slug: $SLUG"
+echo ""
 
 # Reset versions
 cat android/app/build.gradle | sed -e 's/versionCode .*/versionCode 1/' | sed -e 's/versionName ".*"/versionName "1.0.0"/' > android/app/_build.gradle && mv android/app/_build.gradle android/app/build.gradle
@@ -51,7 +56,9 @@ cat ios/react-native-starter/Info.plist | sed -e 's/\([0-9]*\.[0-9]*\.[0-9]*\)/1
 
 RENAME=$(./node_modules/.bin/react-native-rename "$NAME" -b "$ID")
 if [[ $RENAME = *"not a valid name"* ]]; then
+  echo ""
   echo $RENAME
+  echo ""
   exit 1
 fi
 
@@ -77,7 +84,7 @@ FILES=(
 for file in "${FILES[@]}"
 do
   if [ -f $file ]; then
-    echo "Patching $file"
+    echo "> Patching $file"
     perl -pi -e "s/com.ueno.reactnativestarter/$ID/g" $file
     perl -pi -e "s/react-native-starter/$NAME/g" $file
   else
@@ -99,18 +106,21 @@ perl -pi -e "s/React Native Starter/$NAME/" ios/*/Info.plist
 # Build environment
 source ./scripts/build-env.sh
 
-# Build Cocoapods
-echo "Rebuilding pods"
-rm -rf ./ios/{Pods,Podfile.lock}
-cd ios
-pod install
-cd -
+# Build Cocoapods (Only on macOS)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  echo ""
+  echo "> Rebuilding pods"
+  echo ""
+  rm -rf ./ios/{Pods,Podfile.lock}
+  cd ios
+  pod install
+  cd -
+fi
 
 # Cleanup
 CLEANUP=(
   "./CHANGELOG.md"
   "./README.md"
-  "./CODE_OF_CONDUCT.md"
   "./LICENSE.md"
   "./docs"
   "./.github"
@@ -130,6 +140,13 @@ if [[ $REST != *"--no-git"* ]]; then
   git checkout $branch_name
   git merge feature/rename
   git branch -D feature/rename
-fi
 
-echo "Successfully renamed app"
+  echo ""
+  echo "> Successfully renamed app"
+
+  rm -rf ./.git
+
+  git init
+  git add .
+  git commit -m "Init Create Ueno App with React Native Starter" --no-verify
+fi

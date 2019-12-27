@@ -1,55 +1,44 @@
-import * as React from 'react';
-import { View, Text } from 'react-native';
-import { observer } from 'mobx-react';
-import { Store } from 'store';
-import { IReactNavigation } from 'typings';
-import Button from 'components/button';
-import s from './Counter.css';
+import { Observer } from 'mobx-react';
+import React from 'react';
+import { Text, View } from 'react-native';
+import { Button } from '../../components/button/Button';
+import { Counter } from '../../stores/Counter';
+import s from './Counter.scss';
 
-@observer
-export default class Counter extends React.Component<IReactNavigation> {
-
-  static get options() {
-    return {
-      topBar: {
-        title: {
-          text: 'Counter',
-        },
-      },
-    };
-  }
-
-  componentDidAppear() {
-    Store.UI.setComponentId(this.props.componentId);
-  }
-
-  render() {
-    const { UI } = Store;
-
-    return (
-      <View style={s.host} testID="COUNTER_SCREEN">
-        <View style={s.content}>
-          <Text style={s.text}>Counter: {UI.counter}</Text>
+export const CounterScreen = () => (
+  <Observer
+    render={() => (
+      <View style={s.counter} testID="COUNTER_SCREEN">
+        <View style={s.counter__content}>
+          <Text style={s.counter__text}>Counter: {Counter.counter}</Text>
         </View>
 
-        <View style={s.actions}>
+        <View style={s.counter__actions}>
           <Button
             title="Decrement"
-            onPress={UI.decrement}
+            onPress={Counter.decrement}
             testID="BUTTON_DECREMENT"
-            style={s.actions__button}
+            style={s.counter__button}
           />
 
-          <View style={s.actions__spacer} />
+          <View style={s.counter__spacer} />
 
           <Button
             title="Increment"
-            onPress={UI.increment}
+            onPress={Counter.increment}
             testID="BUTTON_INCREMENT"
-            style={s.actions__button}
+            style={s.counter__button}
           />
         </View>
       </View>
-    );
-  }
-}
+    )}
+  />
+);
+
+CounterScreen.options = {
+  topBar: {
+    title: {
+      text: 'Counter',
+    },
+  },
+};

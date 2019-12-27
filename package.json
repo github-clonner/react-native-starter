@@ -1,89 +1,105 @@
 {
   "name": "react-native-starter",
-  "version": "1.0.5",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "build:env": "sh ./scripts/build-env.sh",
     "build:e2e:ios": "detox build --configuration ios.sim.release",
     "build:e2e:android": "detox build --configuration android.emu.release",
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "rename": "./scripts/rename.sh",
+    "rename": "sh ./scripts/rename.sh",
+    "podspec": "sh ./scripts/podspec.sh",
+    "prettier": "prettier --write 'src/**/*.{json,md,js,jsx,ts,tsx}'",
     "test": "jest",
     "test:e2e": "yarn build:e2e:ios && yarn test:e2e:ios",
     "test:e2e:ios": "detox test --configuration ios.sim.release",
     "test:e2e:android": "detox test --configuration android.emu.release",
-    "lint": "yarn tslint",
-    "tslint": "tslint 'src/**/*.ts?(x)'",
-    "precommit": "lint-staged",
-    "prepush": "npm run test",
-    "prepare": "patch-package && if [ -f ./scripts/postinstall.sh ]; then sh ./scripts/postinstall.sh; fi"
+    "lint": "yarn tslint && yarn stylelint",
+    "tslint": "tsc -p . --noEmit --skipLibCheck; tslint --fix 'src/**/*.{ts,tsx}' -p .",
+    "stylelint": "stylelint 'src/**/*.scss' --syntax scss",
+    "prepare": "patch-package && sh ./scripts/postinstall.sh"
+  },
+  "contributors": [
+    "Jérémy Barbet <jeremgraph@gmail.com>",
+    "Birkir Gudjonsson <birkir.gudjonsson@gmail.com>"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
+    "*.{ts,tsx,js,json,md}": [
+      "prettier --write",
+      "git add"
+    ],
     "*.{ts,tsx}": [
       "tslint"
+    ],
+    "*.{scss}": [
+      "stylelint"
     ]
   },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
   "dependencies": {
-    "core-decorators": "0.20.0",
-    "date-fns": "1.29.0",
-    "jsc-android": "224109.1.0",
+    "@react-native-community/async-storage": "1.5.0",
+    "jsc-android": "241213.1.0",
     "lodash": "4.17.11",
-    "mobx": "5.1.2",
-    "mobx-react": "5.2.8",
-    "mobx-state-tree": "3.3.0",
-    "react": "16.5.2",
-    "react-native": "0.57.0",
-    "react-native-code-push": "5.4.2",
-    "react-native-config": "0.11.5",
-    "react-native-fast-image": "5.0.3",
-    "react-native-firebase": "4.3.8",
-    "react-native-navigation": "2.0.2542",
-    "react-native-sentry": "0.39.0",
-    "react-native-version-number": "0.3.4"
+    "mobx": "5.10.1",
+    "mobx-devtools-mst": "0.9.21",
+    "mobx-react": "6.1.1",
+    "mobx-state-tree": "3.14.0",
+    "react": "16.8.6",
+    "react-native": "0.59.9",
+    "react-native-code-push": "5.6.0",
+    "react-native-config": "0.11.7",
+    "react-native-firebase": "5.5.1",
+    "react-native-navigation": "2.21.0",
+    "react-native-sentry": "0.43.2",
+    "react-native-ueno-css-modules": "1.1.0",
+    "react-native-version-number": "0.3.6"
   },
   "devDependencies": {
-    "@babel/core": "7.1.0",
-    "@babel/plugin-proposal-decorators": "7.1.0",
-    "@babel/runtime": "7.0.0",
-    "@firebase/app-types": "0.3.2",
+    "@babel/core": "7.3.4",
+    "@babel/plugin-proposal-decorators": "7.3.0",
     "@types/core-decorators": "^0.20.0",
     "@types/date-fns": "^2.6.0",
-    "@types/enzyme": "3.1.14",
-    "@types/enzyme-adapter-react-16": "1.0.3",
-    "@types/html-entities": "1.2.16",
-    "@types/jest": "23.3.2",
-    "@types/lodash": "4.14.116",
+    "@types/enzyme": "3.9.0",
+    "@types/enzyme-adapter-react-16": "1.0.5",
+    "@types/jest": "24.0.9",
+    "@types/lodash": "4.14.122",
     "@types/mobx-devtools-mst": "0.9.0",
-    "@types/react": "16.4.14",
-    "@types/react-native": "0.56.22",
+    "@types/react": "16.8.7",
+    "@types/react-native": "0.57.38",
     "@types/react-native-navigation": "2.0.0",
-    "@types/react-test-renderer": "16.0.2",
-    "babel-core": "^7.0.0-0",
-    "babel-jest": "23.6.0",
-    "babel-plugin-module-resolver": "3.1.1",
-    "detox": "9.0.1",
-    "enzyme": "3.6.0",
-    "enzyme-adapter-react-16": "1.5.0",
-    "husky": "0.14.3",
-    "jest": "23.6.0",
-    "lint-staged": "7.2.2",
-    "mobx-devtools": "0.9.18",
-    "mobx-devtools-mst": "0.9.18",
-    "patch-package": "5.1.1",
+    "@types/react-test-renderer": "16.8.1",
+    "@ueno/stylelint-config": "1.1.2",
+    "@ueno/tslint-config": "1.0.8",
+    "babel-jest": "24.3.1",
+    "detox": "12.11.2",
+    "enzyme": "3.9.0",
+    "enzyme-adapter-react-16": "1.10.0",
+    "husky": "1.3.1",
+    "jest": "24.3.1",
+    "jest-haste-map": "^24.0.0",
+    "jest-resolve": "^24.1.0",
+    "lint-staged": "8.1.5",
+    "mobx-devtools": "0.9.21",
+    "node-sass": "4.12.0",
+    "patch-package": "6.1.2",
     "postinstall-prepare": "1.0.1",
-    "react-dom": "16.5.2",
-    "react-native-rename": "2.2.2",
-    "react-native-typescript-transformer": "1.2.10",
-    "react-native-ueno-css-modules": "1.0.12",
-    "react-test-renderer": "16.5.2",
-    "schedule": "0.4.0",
-    "stylus": "0.54.5",
-    "ts-jest": "23.10.0",
-    "tslib": "1.9.3",
-    "tslint": "5.11.0",
-    "tslint-config-airbnb": "5.11.0",
-    "tslint-react": "3.6.0",
-    "typescript": "3.0.3"
+    "prettier": "1.16.4",
+    "react-dom": "16.8.6",
+    "react-native-rename": "2.4.1",
+    "react-test-renderer": "16.8.6",
+    "stylelint": "9.10.1",
+    "ts-jest": "24.0.0",
+    "tslint": "5.13.1",
+    "tslint-config-prettier": "1.18.0",
+    "typescript": "3.3.3333"
   },
   "jest": {
     "preset": "react-native",
@@ -112,13 +128,31 @@
       "node"
     ]
   },
+  "metro": {
+    "resolver": {
+      "sourceExts": [
+        "js",
+        "json",
+        "ts",
+        "tsx",
+        "css",
+        "scss"
+      ]
+    },
+    "transformer": {
+      "babelTransformerPath": "react-native-ueno-css-modules/transformer"
+    }
+  },
+  "stylelint": {
+    "extends": "@ueno/stylelint-config"
+  },
   "detox": {
     "test-runner": "jest",
     "specs": "e2e",
     "configurations": {
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/react-native-starter.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/react-native-starter.xcworkspace -scheme react-native-starter -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/react-native-starter.xcworkspace -scheme react-native-starter -configuration Release -sdk iphonesimulator -derivedDataPath ios/build ONLY_ACTIVE_ARCH=YES -quiet -UseModernBuildSystem=NO",
         "type": "ios.simulator",
         "name": "iPhone 7 Plus"
       },
@@ -126,7 +160,7 @@
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
         "build": "pushd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && popd",
         "type": "android.emulator",
-        "name": "Nexus_5X_API_28"
+        "name": "Pixel_2_API_28"
       }
     }
   }

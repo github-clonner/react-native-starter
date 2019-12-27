@@ -1,18 +1,20 @@
-import './utils/setup';
+import makeInspectable from 'mobx-devtools-mst';
 import { Navigation } from 'react-native-navigation';
-import { updateTheme } from './utils/theme';
 import { Screens, startApp } from './screens';
-import { Store } from './store';
+import { Counter } from './stores/Counter';
+import './utils/setup';
 
 // Register screens
 Screens.forEach((ScreenComponent, key) =>
-  Navigation.registerComponent(key, () => ScreenComponent));
+  Navigation.registerComponent(key, () => ScreenComponent)
+);
+
+// Make inspectable
+if (__DEV__) {
+  makeInspectable(Counter);
+}
 
 // Start application
 Navigation.events().registerAppLaunchedListener(() => {
-  // Hydrate store and start app
-  Store
-    .hydrate()
-    .then(updateTheme)
-    .then(startApp);
+  startApp();
 });
