@@ -1,9 +1,11 @@
 package com.ueno.reactnativestarter;
 
+import android.content.Context;
 import android.app.Application;
 import android.util.Log;
 import java.util.Arrays;
 import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 
 // React Native
 import com.facebook.react.ReactInstanceManager;
@@ -12,8 +14,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.PackageList;
 import com.facebook.react.shell.MainReactPackage;
-import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
-import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.soloader.SoLoader;
 
 // React Native Navigation
@@ -36,15 +36,38 @@ public class MainApplication extends NavigationApplication {
             }
             @Override
             protected String getJSMainModuleName() {
-                return "index";
+                return "src/index";
             }
         };
-        return new ReactGateway(this, isDebug(), host);
+        ReactGateway gateway = new ReactGateway(this, isDebug(), host);
+        // Enable Flipper for Android
+        // initializeFlipper(this, host.getReactInstanceManager());
+        return gateway;
     }
 
     @Override
     public boolean isDebug() {
         return BuildConfig.DEBUG;
+    }
+
+
+    private static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
+        if (BuildConfig.DEBUG) {
+            try {
+                Class<?> aClass = Class.forName("com.ueno.reactnativestarter.ReactNativeFlipper");
+                aClass
+                        .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
+                        .invoke(null, context, reactInstanceManager);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // Add custom packages here
