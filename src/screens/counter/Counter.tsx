@@ -1,39 +1,58 @@
-import { Observer } from 'mobx-react';
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useContext } from 'react';
+import styled from 'styled-components/native';
 import { Button } from '../../components/button/Button';
-import { Counter } from '../../stores/Counter';
-import s from './Counter.scss';
+import { CounterContext } from '../../contexts/CounterContext';
 
-export const CounterScreen = () => (
-  <Observer
-    render={() => (
-      <View style={s.counter} testID="COUNTER_SCREEN">
-        <View style={s.counter__content}>
-          <Text style={s.counter__text}>Counter: {Counter.counter}</Text>
-        </View>
+const Main = styled.View`
+  flex: 1;
+  padding: 16px;
+  background-color: #fff;
+`;
 
-        <View style={s.counter__actions}>
-          <Button
-            title="Decrement"
-            onPress={Counter.decrement}
-            testID="BUTTON_DECREMENT"
-            style={s.counter__button}
-          />
+const Content = styled.View`
+  margin-bottom: 16px;
+`;
 
-          <View style={s.counter__spacer} />
+const Text = styled.Text`
+  font-size: 21px;
+  font-weight: 200;
+`;
 
-          <Button
-            title="Increment"
-            onPress={Counter.increment}
-            testID="BUTTON_INCREMENT"
-            style={s.counter__button}
-          />
-        </View>
-      </View>
-    )}
-  />
-);
+const Actions = styled.View`
+  flex-direction: row;
+`;
+
+const Spacer = styled.View`
+  width: 16px;
+`;
+
+const ActionButton = styled(Button)`
+  flex: 1;
+`;
+
+export function CounterScreen() {
+  const { counter, increment, decrement } = useContext(CounterContext);
+  return (
+    <Main testID="COUNTER_SCREEN">
+      <Content>
+        <Text>Counter: {counter}</Text>
+      </Content>
+      <Actions>
+        <ActionButton
+          title="Decrement"
+          onPress={decrement}
+          testID="BUTTON_DECREMENT"
+        />
+        <Spacer />
+        <ActionButton
+          title="Increment"
+          onPress={increment}
+          testID="BUTTON_INCREMENT"
+        />
+      </Actions>
+    </Main>
+  );
+}
 
 CounterScreen.options = {
   topBar: {
